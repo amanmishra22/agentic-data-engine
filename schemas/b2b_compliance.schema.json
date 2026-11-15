@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "B2BComplianceAuditFeed",
+  "description": "Standardized schema for high-throughput enterprise accessibility, security, and privacy compliance signals.",
+  "type": "object",
+  "properties": {
+    "url": { "type": "string", "format": "uri" },
+    "title": { "type": ["string", "null"] },
+    "complianceScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "accessibilityScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "securityScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "privacyScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "imagesTotal": { "type": "integer", "minimum": 0 },
+    "imagesMissingAlt": { "type": "integer", "minimum": 0 },
+    "hasHSTS": { "type": "boolean" },
+    "hasCSP": { "type": "boolean" },
+    "hasXFrameOptions": { "type": "boolean" },
+    "hasPrivacyPolicy": { "type": "boolean" },
+    "hasCookieConsent": { "type": "boolean" },
+    "cmsDetected": { "type": ["string", "null"] },
+    "analyticsDetected": { "type": ["array", "null"], "items": { "type": "string" } },
+    "emails": { "type": "array", "items": { "type": "string" } },
+    "phones": { "type": "array", "items": { "type": "string" } },
+    "error": { "type": ["string", "null"] }
+  },
+  "required": ["url", "complianceScore", "accessibilityScore", "securityScore", "privacyScore"]
+}

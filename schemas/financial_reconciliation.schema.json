@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FinancialDocumentReconciliationFeed",
+  "description": "Standardized schema for parsed financial PDF tables with automated mathematical row-sum reconciliation.",
+  "type": "object",
+  "properties": {
+    "documentId": { "type": "string" },
+    "sourceUrl": { "type": "string", "format": "uri" },
+    "totalPages": { "type": "integer", "minimum": 1 },
+    "reconciliationStatus": { "type": "string", "enum": ["RECONCILED", "DISCREPANCY_DETECTED", "MANUAL_REVIEW_REQUIRED"] },
+    "currency": { "type": "string" },
+    "declaredTotal": { "type": "number" },
+    "calculatedTotal": { "type": "number" },
+    "discrepancyDelta": { "type": "number" },
+    "lineItems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rowNumber": { "type": "integer" },
+          "description": { "type": "string" },
+          "quantity": { "type": ["number", "null"] },
+          "unitPrice": { "type": ["number", "null"] },
+          "subtotal": { "type": "number" },
+          "taxRate": { "type": ["number", "null"] }
+        },
+        "required": ["rowNumber", "description", "subtotal"]
+      }
+    },
+    "extractedAt": { "type": "string", "format": "date-time" }
+  },
+  "required": ["documentId", "reconciliationStatus", "declaredTotal", "calculatedTotal", "lineItems"]
+}
