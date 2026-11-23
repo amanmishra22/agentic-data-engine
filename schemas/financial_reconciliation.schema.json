@@ -1,33 +1,34 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "FinancialDocumentReconciliationFeed",
-  "description": "Standardized schema for parsed financial PDF tables with automated mathematical row-sum reconciliation.",
+  "description": "Standardized schema for parsed financial PDF tables with deterministic Quantity × UnitPrice and row-sum reconciliation.",
   "type": "object",
   "properties": {
-    "documentId": { "type": "string" },
-    "sourceUrl": { "type": "string", "format": "uri" },
-    "totalPages": { "type": "integer", "minimum": 1 },
-    "reconciliationStatus": { "type": "string", "enum": ["RECONCILED", "DISCREPANCY_DETECTED", "MANUAL_REVIEW_REQUIRED"] },
-    "currency": { "type": "string" },
-    "declaredTotal": { "type": "number" },
-    "calculatedTotal": { "type": "number" },
-    "discrepancyDelta": { "type": "number" },
-    "lineItems": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "rowNumber": { "type": "integer" },
-          "description": { "type": "string" },
-          "quantity": { "type": ["number", "null"] },
-          "unitPrice": { "type": ["number", "null"] },
-          "subtotal": { "type": "number" },
-          "taxRate": { "type": ["number", "null"] }
-        },
-        "required": ["rowNumber", "description", "subtotal"]
-      }
+    "documentUrl": { "type": "string", "format": "uri" },
+    "pageNumber": { "type": "integer", "minimum": 1 },
+    "tableIndex": { "type": "integer", "minimum": 0 },
+    "reconciliationStatus": {
+      "type": "string",
+      "enum": ["RECONCILED", "DISCREPANCY_DETECTED", "UNRECONCILED_NO_TOTAL", "NO_TABLE_FOUND", "ERROR"]
     },
-    "extractedAt": { "type": "string", "format": "date-time" }
+    "declaredTotal": { "type": ["number", "null"] },
+    "calculatedTotal": { "type": ["number", "null"] },
+    "discrepancyDelta": { "type": ["number", "null"] },
+    "declaredSubtotal": { "type": ["number", "null"] },
+    "declaredTax": { "type": ["number", "null"] },
+    "declaredDiscount": { "type": ["number", "null"] },
+    "rowMathMismatches": { "type": "integer", "minimum": 0 },
+    "rowCount": { "type": "integer", "minimum": 0 },
+    "currency": { "type": "string" },
+    "invoiceNumber": { "type": ["string", "null"] },
+    "documentDate": { "type": ["string", "null"] },
+    "taxIds": { "type": "array", "items": { "type": "string" } },
+    "columns": { "type": "array", "items": { "type": "string" } },
+    "rows": { "type": "array", "items": { "type": "object" } },
+    "markdownTable": { "type": ["string", "null"] },
+    "confidenceScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "reconciledAt": { "type": "string", "format": "date-time" },
+    "error": { "type": ["string", "null"] }
   },
-  "required": ["documentId", "reconciliationStatus", "declaredTotal", "calculatedTotal", "lineItems"]
+  "required": ["documentUrl", "pageNumber", "tableIndex", "reconciliationStatus", "confidenceScore"]
 }

@@ -130,7 +130,7 @@ def prioritize_vulnerabilities(state: PipelineState) -> Dict[str, Any]:
         elif domain == "financial_reconciliation":
             status = record.get("reconciliationStatus", "")
             delta = abs(float(record.get("discrepancyDelta") or 0.0))
-            if status == "DISCREPANCY_FOUND" or delta > 0.01:
+            if status in ("DISCREPANCY_DETECTED", "DISCREPANCY_FOUND") or delta > 0.01:
                 prioritized.append({
                     "domain": domain,
                     "entityId": f"{record['documentUrl']}#page={record.get('pageNumber', 1)}",
@@ -312,7 +312,7 @@ if __name__ == "__main__":
             "documentUrl": "https://docs.enterprise.example/invoices/inv-2026-884.pdf",
             "pageNumber": 1,
             "tableIndex": 0,
-            "reconciliationStatus": "DISCREPANCY_FOUND",
+            "reconciliationStatus": "DISCREPANCY_DETECTED",
             "declaredTotal": 14850.00,
             "calculatedTotal": 14350.00,
             "discrepancyDelta": 500.00,
