@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PublicProcurementTenderFeed",
+  "description": "Standardized schema for enriched public procurement tenders, corrigendums, sector classification, and deadline urgency.",
+  "type": "object",
+  "properties": {
+    "tenderId": { "type": "string" },
+    "referenceNumber": { "type": ["string", "null"] },
+    "sourcePortal": { "type": "string" },
+    "recordType": { "type": "string", "enum": ["ACTIVE_TENDER", "CORRIGENDUM", "REVERSE_AUCTION"] },
+    "title": { "type": "string" },
+    "category": { "type": ["string", "null"] },
+    "sectorDomain": { "type": "string" },
+    "ministry": { "type": ["string", "null"] },
+    "departmentOrOrg": { "type": ["string", "null"] },
+    "quantity": { "type": ["number", "null"] },
+    "isHighValue": { "type": ["boolean", "null"] },
+    "msmeOrStartupFriendly": { "type": "boolean" },
+    "publishedAt": { "type": ["string", "null"] },
+    "closingAt": { "type": ["string", "null"] },
+    "openingAt": { "type": ["string", "null"] },
+    "daysRemaining": { "type": ["number", "null"] },
+    "urgencyLevel": { "type": "string", "enum": ["CLOSING_24H", "CLOSING_7D", "OPEN", "EXPIRED", "UNKNOWN"] },
+    "documentUrl": { "type": ["string", "null"] },
+    "portalUrl": { "type": "string" },
+    "extractedAt": { "type": "string", "format": "date-time" },
+    "error": { "type": ["string", "null"] }
+  },
+  "required": ["tenderId", "sourcePortal", "recordType", "title", "sectorDomain", "urgencyLevel", "portalUrl"]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RealEstateRegulatoryComplianceFeed",
+  "description": "Standardized schema for state real estate regulatory project registrations, promoter diligence, coordinates, and completion risk.",
+  "type": "object",
+  "properties": {
+    "registrationNumber": { "type": "string" },
+    "state": { "type": "string" },
+    "authority": { "type": "string" },
+    "projectName": { "type": "string" },
+    "promoterName": { "type": ["string", "null"] },
+    "district": { "type": ["string", "null"] },
+    "localityOrAddress": { "type": ["string", "null"] },
+    "pincode": { "type": ["string", "null"] },
+    "latitude": { "type": ["number", "null"] },
+    "longitude": { "type": ["number", "null"] },
+    "registrationDate": { "type": ["string", "null"] },
+    "proposedCompletionDate": { "type": ["string", "null"] },
+    "lastModifiedDate": { "type": ["string", "null"] },
+    "hasExtension": { "type": "boolean" },
+    "projectStatus": { "type": "string" },
+    "complianceScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "riskTier": { "type": "string", "enum": ["LOW_RISK", "MODERATE_RISK", "HIGH_RISK"] },
+    "riskFlags": { "type": "array", "items": { "type": "string" } },
+    "detailUrl": { "type": ["string", "null"] },
+    "verifiedAt": { "type": "string", "format": "date-time" },
+    "error": { "type": ["string", "null"] }
+  },
+  "required": ["registrationNumber", "state", "authority", "projectName", "complianceScore", "riskTier"]
+}

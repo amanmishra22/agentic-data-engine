@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ContractorLicenseVerificationFeed",
+  "description": "Vendor-neutral schema for multi-state contractor license, surety bond, insurance, and compliance risk verification.",
+  "type": "object",
+  "properties": {
+    "state": { "type": "string", "minLength": 2, "maxLength": 2 },
+    "registrySource": { "type": "string" },
+    "licenseNumber": { "type": "string" },
+    "businessName": { "type": "string" },
+    "ownerOrPrincipal": { "type": ["string", "null"] },
+    "licenseStatus": { "type": "string", "enum": ["ACTIVE", "EXPIRED", "SUSPENDED", "INACTIVE", "PENDING", "UNKNOWN"] },
+    "isActive": { "type": "boolean" },
+    "classifications": { "type": "array", "items": { "type": "string" } },
+    "issueDate": { "type": ["string", "null"] },
+    "expirationDate": { "type": ["string", "null"] },
+    "daysUntilExpiration": { "type": ["integer", "null"] },
+    "bondCompany": { "type": ["string", "null"] },
+    "bondAmount": { "type": ["number", "null"] },
+    "insuranceOrWorkersCompStatus": { "type": ["string", "null"] },
+    "phone": { "type": ["string", "null"] },
+    "address": { "type": ["string", "null"] },
+    "city": { "type": ["string", "null"] },
+    "county": { "type": ["string", "null"] },
+    "zipCode": { "type": ["string", "null"] },
+    "trustScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "underwritingDecision": { "type": "string", "enum": ["APPROVE", "REVIEW", "REJECT"] },
+    "complianceFlags": { "type": "array", "items": { "type": "string" } },
+    "verifiedAt": { "type": "string", "format": "date-time" },
+    "error": { "type": ["string", "null"] }
+  },
+  "required": ["state", "licenseNumber", "businessName", "licenseStatus", "isActive", "trustScore", "underwritingDecision"]
+}

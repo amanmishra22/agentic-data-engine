@@ -5,100 +5,109 @@
 [![JSON Schema 2020-12](https://img.shields.io/badge/Schema-Draft%202020--12-green.svg)](https://json-schema.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-An enterprise-grade reference architecture for **Autonomous Ingestion, Schema Normalization, and Multi-Agent Reasoning Pipelines**.
+An enterprise reference architecture for **Autonomous Data Ingestion, JSON Schema Draft 2020-12 Normalization, and Multi-Domain LangGraph Reasoning Pipelines**.
 
-This repository demonstrates how high-throughput, raw web & document signals are ingested, verified against formal JSON schemas, and dispatched through state-machine reasoning agents built with **LangGraph**.
+This repository demonstrates how heterogeneous web, regulatory registry, public procurement, and financial PDF streams are validated against formal JSON Schema contracts and routed through deterministic **LangGraph** state machines into downstream ERP, KYB, SecOps, and Legal queues.
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph INGESTION["1. Ingestion & Extraction Layer"]
-        RAW_WEB["Public Web Endpoints\n(B2B Portals / Registries)"]
-        DOC_SRC["Complex Documents\n(Invoices / BOQs / PDFs)"]
-        EXTRACTOR["High-Concurrency\nAsync Parsers (HTTP/2)"]
-        
-        RAW_WEB --> EXTRACTOR
-        DOC_SRC --> EXTRACTOR
+    subgraph INGESTION["1. Multi-Domain Signal Ingestion"]
+        WEB_SRC["B2B Web & Security Signals"]
+        FIN_DOC["Financial PDFs & Invoices"]
+        KYB_REG["State Licensing & RERA Registries"]
+        PROC_FEED["Public Procurement & Tender Portals"]
+        PARSER["Async HTTP/2 & Document Parsers"]
+
+        WEB_SRC --> PARSER
+        FIN_DOC --> PARSER
+        KYB_REG --> PARSER
+        PROC_FEED --> PARSER
     end
 
-    subgraph NORMALIZATION["2. Schema Verification Layer"]
-        JSON_FEED["Structured JSON\nData Stream"]
-        VALIDATOR["JSON Schema Validator\n(Draft 2020-12)"]
-        SCHEMA_STORE["Schema Registry\n(/schemas/*.json)"]
-        
-        EXTRACTOR --> JSON_FEED
-        JSON_FEED --> VALIDATOR
-        SCHEMA_STORE -.-> VALIDATOR
+    subgraph NORMALIZATION["2. Draft 2020-12 Contract Layer"]
+        STREAM["Normalized JSON Event Stream"]
+        VALIDATOR["Deterministic Schema Gate"]
+        REGISTRY["Schema Registry (/schemas/*.schema.json)"]
+
+        PARSER --> STREAM
+        STREAM --> VALIDATOR
+        REGISTRY -.-> VALIDATOR
     end
 
-    subgraph REASONING["3. LangGraph State Machine"]
-        START((Start)) --> NODE_VAL["Node: Validate & Sanitize"]
-        NODE_VAL --> NODE_RISK["Node: Vulnerability & Anomaly Scoring"]
-        NODE_RISK --> NODE_DISPATCH["Node: Action & Remediation Generator"]
+    subgraph REASONING["3. LangGraph Multi-Domain State Machine"]
+        START((Start)) --> NODE_VAL["Node 1: Domain Detection & Anomaly Quarantine"]
+        NODE_VAL --> NODE_RISK["Node 2: Cross-Domain Risk & Urgency Scoring"]
+        NODE_RISK --> NODE_DISPATCH["Node 3: Action & Remediation Generator"]
         NODE_DISPATCH --> FINISH(((End)))
     end
 
-    subgraph OUTPUT["4. Enterprise Action Dispatch"]
-        ALERT["Security / Compliance\nAlert Feeds"]
-        CRM["Enterprise CRM / ERP\nSynchronizers"]
-        AUDIT_DB["PostgreSQL / ClickHouse\nAudit Warehouse"]
-        
-        FINISH --> ALERT
-        FINISH --> CRM
-        FINISH --> AUDIT_DB
+    subgraph OUTPUT["4. Enterprise Dispatch Buses"]
+        SECOPS["SecOps & WCAG Remediation"]
+        AP_HOLD["Accounts Payable Ledger Hold"]
+        KYB_DESK["Vendor KYB & Legal Diligence"]
+        BID_DESK["B2G Bid Desk & CRM Alerts"]
+
+        FINISH --> SECOPS
+        FINISH --> AP_HOLD
+        FINISH --> KYB_DESK
+        FINISH --> BID_DESK
     end
 
-    VALIDATOR -->|"Verified State Stream"| START
+    VALIDATOR -->|"Verified Typed Records"| START
 ```
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
-```
+```text
 agentic-data-engine/
-├── README.md                           # System architecture & documentation
-├── requirements.txt                    # Minimal dependencies
-├── schemas/                            # Strict, vendor-neutral JSON Schemas
-│   ├── b2b_compliance.schema.json      # Web accessibility, security & privacy schema
-│   └── financial_reconciliation.schema.json # PDF table extraction & balance reconciliation
-└── agents/                             # Autonomous reasoning state machines
+├── README.md                                        # Architecture & operational guide
+├── requirements.txt                                 # Minimal runtime dependencies
+├── schemas/                                         # Strict JSON Schema Draft 2020-12 contracts
+│   ├── b2b_compliance.schema.json                   # Web WCAG 2.2, security headers & privacy audit
+│   ├── financial_reconciliation.schema.json         # Multi-page PDF table & row-sum reconciliation
+│   ├── us_contractor_license.schema.json            # Multi-state contractor KYB, bond & insurance
+│   ├── public_procurement_tender.schema.json        # Public procurement tenders & urgency triage
+│   └── real_estate_rera_compliance.schema.json      # Real estate regulatory filings & delay risk
+└── agents/                                          # Autonomous LangGraph reasoning workflows
     ├── __init__.py
-    ├── state.py                        # TypedDict pipeline state definitions
-    └── audit_agent.py                  # LangGraph multi-node remediation workflow
+    ├── state.py                                     # TypedDict multi-domain pipeline state
+    └── audit_agent.py                               # 5-domain validation, triage & dispatch graph
 ```
 
 ---
 
-## 🔍 Data Schemas
+## Draft 2020-12 Data Contracts
 
-The engine enforces strict, typed contracts before data reaches the reasoning layer:
+Every record entering the reasoning graph is validated against one of five formal domain contracts:
 
-| Schema | File | Primary Use Case |
-| :--- | :--- | :--- |
-| **B2B Compliance Feed** | [`schemas/b2b_compliance.schema.json`](schemas/b2b_compliance.schema.json) | WCAG 2.2 accessibility failures, HSTS/CSP security header gaps, cookie consent status. |
-| **Financial Reconciliation** | [`schemas/financial_reconciliation.schema.json`](schemas/financial_reconciliation.schema.json) | Multi-page PDF financial tables, balance reconciliation delta, tax breakdown. |
+| Domain | Schema Contract | Key Verified Signals | Downstream Dispatch Target |
+| :--- | :--- | :--- | :--- |
+| **B2B Web Compliance** | [`schemas/b2b_compliance.schema.json`](schemas/b2b_compliance.schema.json) | WCAG 2.2 alt/label deficits, HSTS/CSP headers, GDPR consent | `SECOPS_AND_WCAG_QUEUE` |
+| **Financial Reconciliation** | [`schemas/financial_reconciliation.schema.json`](schemas/financial_reconciliation.schema.json) | Declared vs. calculated line-item totals, currency, math delta | `AP_LEDGER_HOLD_QUEUE` |
+| **Contractor KYB Licensing** | [`schemas/us_contractor_license.schema.json`](schemas/us_contractor_license.schema.json) | Multi-state license standing, surety bond, liability insurance, expiry | `VENDOR_KYB_UNDERWRITING` |
+| **Public Procurement** | [`schemas/public_procurement_tender.schema.json`](schemas/public_procurement_tender.schema.json) | Active tenders, corrigendums, sector classification, closing urgency | `B2G_BID_DESK_DISPATCH` |
+| **Real Estate RERA Diligence** | [`schemas/real_estate_rera_compliance.schema.json`](schemas/real_estate_rera_compliance.schema.json) | Official RERA registration, promoter entity, GPS lat/lng, extensions | `LEGAL_COLLATERAL_DILIGENCE` |
 
 ---
 
-## 🤖 Autonomous LangGraph Agent Workflow
-
-The agent uses a **StateGraph** to progress from raw data to an actionable executive plan without human intervention:
+## Autonomous LangGraph State Transitions
 
 ```mermaid
 stateDiagram-v2
     [*] --> IngestAndValidate
-    IngestAndValidate --> PrioritizeVulnerabilities : Valid Schema
-    IngestAndValidate --> AnomalyQuarantine : Invalid Bounds
-    PrioritizeVulnerabilities --> GenerateRemediation : Critical / High Risk
-    GenerateRemediation --> DispatchActionPayloads
-    DispatchActionPayloads --> [*]
+    IngestAndValidate --> PrioritizeCrossDomainRisk : Schema Valid
+    IngestAndValidate --> AnomalyQuarantine : Bounds / Contract Violation
+    PrioritizeCrossDomainRisk --> GenerateRemediationPayloads : Actionable Risk / Deadline
+    GenerateRemediationPayloads --> [*]
 ```
 
-### Running the Demo Agent Locally
+### Quickstart
 
 ```bash
 # 1. Clone repository
@@ -108,35 +117,47 @@ cd agentic-data-engine
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Execute the state graph agent
+# 3. Execute the 5-domain triage state machine
 python -m agents.audit_agent
 ```
 
-### Sample Output
+### Sample Multi-Domain Dispatch Output
 
 ```json
-{
-  "targetUrl": "https://vulnerable-portal.org",
-  "riskLevel": "CRITICAL",
-  "urgency": "IMMEDIATE",
-  "contactRecipients": ["contact@vulnerable-portal.org"],
-  "recommendedRemediation": [
-    "Configure Strict-Transport-Security header (max-age=31536000; includeSubDomains).",
-    "Define Content-Security-Policy to mitigate Cross-Site Scripting (XSS).",
-    "Add descriptive alt attributes to 18 unlabelled visual assets."
-  ]
-}
+[
+  {
+    "domain": "financial_reconciliation",
+    "entityId": "https://docs.enterprise.example/invoices/inv-2026-884.pdf#page=1",
+    "dispatchChannel": "AP_LEDGER_HOLD_QUEUE",
+    "riskLevel": "CRITICAL",
+    "urgency": "IMMEDIATE",
+    "recommendedActions": [
+      "Hold invoice payout: declared total (14850.0 USD) differs from line-item sum (14350.0 USD) by 500.0."
+    ]
+  },
+  {
+    "domain": "contractor_license",
+    "entityId": "OR-198412",
+    "dispatchChannel": "VENDOR_KYB_UNDERWRITING",
+    "riskLevel": "CRITICAL",
+    "urgency": "IMMEDIATE",
+    "recommendedActions": [
+      "Vendor 'APEX STRUCTURAL CONTRACTING LLC' triaged as REJECT; review flags: STATUS_EXPIRED, LICENSE_EXPIRED."
+    ]
+  }
+]
 ```
 
 ---
 
-## 🛡️ Production Engineering Standards
+## Engineering Principles
 
-- **Zero-Trust Input:** All incoming records must pass schema validation prior to memory buffer insertion.
-- **Deterministic Routing:** Conditional branches safely isolate anomalous records to prevent LLM hallucinations.
-- **Stateless Execution:** Nodes are idempotent and state transitions are auditable across time.
+- **Zero-Trust Ingestion:** Malformed payloads and out-of-bounds scores are quarantined before reaching reasoning nodes.
+- **Deterministic Financial & KYB Guardrails:** Arithmetic discrepancies, license expirations, and regulatory extensions are evaluated deterministically rather than delegated to probabilistic generation.
+- **Idempotent Graph Nodes:** Each node operates purely on `PipelineState` transitions for reproducible audit trails.
 
 ---
 
-## 📄 License
-This project is licensed under the MIT License — see the LICENSE file for details.
+## License
+
+Released under the MIT License.
